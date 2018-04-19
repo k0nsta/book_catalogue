@@ -20,7 +20,7 @@ class Isactiveable(models.Model):
 
 
 class Titleable(models.Model):
-    title = models.CharField(max_length=255, null=True)
+    title = models.CharField(max_length=255, null=True, unique=True)
 
     class Meta:
         abstract = True

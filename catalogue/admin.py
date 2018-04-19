@@ -4,23 +4,21 @@ from .models import Author
 from .models import Book
 from .models import Category
 from .models import Publisher
+from .models import BookHighlight
 
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    model = Author
     exclude = ('is_void', )
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    model = Category
     exclude = ('is_void', )
 
 
 @admin.register(Publisher)
 class PublisherAdmin(admin.ModelAdmin):
-    model = Publisher
     exclude = ('is_void',)
 
 
@@ -37,5 +35,13 @@ class BookAdmin(admin.ModelAdmin):
     )
     exclude = ('is_void', )
 
-    class Meta:
-        model = Book
+
+@admin.register(BookHighlight)
+class UserToBookRelationsAdmin(admin.ModelAdmin):
+    list_display = (
+            'user',
+            'book',
+            'in_bookmarks',
+        )
+
+    exclude = ('is_void', )

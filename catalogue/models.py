@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 from .behaviors import Timestampable
 from .behaviors import Isactiveable
@@ -34,6 +35,7 @@ class Publisher(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model
 class Category(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
 
     class Meta:
+        verbose_name_plural = 'Categories'
         default_related_name = 'categories'
 
     def __str__(self):
@@ -52,3 +54,15 @@ class Book(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
         return self.title
 
 
+class BookHighlight(Isactiveable, Timestampable, IsVoidable, models.Model):
+    user = models.ForeignKey(User, models.CASCADE)
+    book = models.ForeignKey(Book, models.CASCADE, blank=True, null=True)
+    in_bookmarks = models.BooleanField(default=False)
+
+    class Meta:
+        default_related_name = 'highlights'
+        verbose_name = 'Highlight book'
+        verbose_name_plural = 'Highlight books'
+
+    def __str__(self):
+        return "{} highlighted {}".format(self.user.username, self.book.title)

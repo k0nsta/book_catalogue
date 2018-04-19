@@ -4,7 +4,6 @@ from catalogue.models import Author
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Author
         fields = ('id', 'full_name', )
