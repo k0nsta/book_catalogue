@@ -1,9 +1,69 @@
-from rest_framework import serializers
+# from rest_framework import serializers
 
-from catalogue.models import Book
+# from catalogue.models import Book
+# from catalogue.models import Author
+# from catalogue.models import Publisher
+# from catalogue.models import Category
 
 
-class BookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Book
-        fields = ('id', 'title', 'author', 'category', 'publisher')
+# class AuthorSerializer(serializers.ModelSerializer):
+
+#     class Meta:
+#         model = Author
+#         fields = ('id', 'full_name', )
+
+
+# class CategorySerializer(serializers.ModelSerializer):
+#     """
+#     Implemented field's serialization. Serializer fields
+#     handle converting between primitive values and internal datatypes.
+#     They also deal with validating input values, as well as retrieving
+#     and setting the values from their parent objects.
+#     See: http://www.django-rest-framework.org/api-guide/fields/
+#     """
+#     category = serializers.CharField(source='title')
+#     create = serializers.CharField(source='create_date')
+
+#     class Meta:
+#         model = Category
+#         fields = ('id', 'category', 'create')
+
+
+# class BookSerializer(serializers.ModelSerializer):
+#     """
+#     Implemented several different technics for cilent-side view data.
+#     1:The model 'Author' doesn't have a field 'full name',
+#     it has fields 'first_name', 'last_name'. Full name has been
+#     converted on model side, used by @property. On client side
+#     represent like str.
+#     2: We redeclarate publisher's field 'title' on 'publisher' used by
+#     field serialization inside 'BookSerializer', other ways we can get
+#     on client-side publisher's filed name is 'title'.
+#     """
+#     author = serializers.CharField(source='author.full_name')
+#     publisher = serializers.CharField(source='publisher.title')
+#     category = CategorySerializer()
+
+#     class Meta:
+#         model = Book
+#         fields = ('id', 'title', 'author', 'category', 'publisher')
+
+
+# class BookForPublisherSerializer(BookSerializer):
+#     publisher = None
+
+#     class Meta(BookSerializer.Meta):
+#         model = Book
+
+
+# class PublisherSerializer(serializers.ModelSerializer):
+#     """
+#     Implemented fields option. The 'fields' options allow explicitly
+#     set all fields that should be serialized.
+#     See: http://www.django-rest-framework.org/api-guide/serializers/#specifying-which-fields-to-include
+#     """
+#     books = BookForPublisherSerializer(many=True, read_only=True)
+
+#     class Meta:
+#         model = Publisher
+#         fields = ('id', 'title', 'books')

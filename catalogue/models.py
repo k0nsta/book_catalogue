@@ -17,6 +17,10 @@ class Author(Isactiveable, Timestampable, IsVoidable, models.Model):
     def __str__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 
+    @property
+    def full_name(self):
+        return '{} {}'.format(self.first_name, self.last_name)
+
 
 class Publisher(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
 
