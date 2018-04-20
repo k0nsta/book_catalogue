@@ -7,12 +7,12 @@ from catalogue.models import Publisher
 from catalogue.models import Category
 from catalogue.models import BookHighlight
 
-from .serializers.book import BookSerializer
-from .serializers.author import AuthorSerializer
-from .serializers.publisher import PublisherSerializer
-from .serializers.category import CategorySerializer
-from .serializers.user import UserSerializer
-from .serializers.bookhighlight import BookHighlightSerializer
+from .serializers import BookSerializer
+from .serializers import AuthorSerializer
+from .serializers import PublisherSerializer
+from .serializers import CategorySerializer
+from .serializers import UserSerializer
+from .serializers import BookHighlightSerializer
 
 
 class BooksViewSet(viewsets.ModelViewSet):
