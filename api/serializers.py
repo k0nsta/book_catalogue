@@ -82,7 +82,7 @@ class PublisherSerializer(serializers.ModelSerializer):
 # BookHighlight serialaziers
 # =================================================================================
 class BookHighlightSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source='user.username')
+    user = serializers.CharField(source='user.username', read_only=True)
     book = BookSerializer()
     in_bookmarks = serializers.BooleanField()
 
@@ -104,4 +104,3 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'highlights', )
-

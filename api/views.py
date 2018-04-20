@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
+from rest_framework import permissions
 
 from catalogue.models import Book
 from catalogue.models import Author
@@ -43,3 +44,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class BookHighlightViewSet(viewsets.ModelViewSet):
     queryset = BookHighlight.objects.all()
     serializer_class = BookHighlightSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
