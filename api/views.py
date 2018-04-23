@@ -50,11 +50,9 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    # def perform_create(self, serializer):
-    #     bookmark = serializer.save()
-    #     bookmark.user = self.request.user
-    #     print(self.request.user)
-    #     bookmark.save()
+    def get_queryset(self):
+        queryset = self.queryset
+        return queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
