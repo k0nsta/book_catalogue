@@ -54,15 +54,13 @@ class Book(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
         return self.title
 
 
-class BookHighlight(Isactiveable, Timestampable, IsVoidable, models.Model):
+class Bookmark(Isactiveable, Timestampable, IsVoidable, models.Model):
     user = models.ForeignKey(User, models.CASCADE)
     book = models.ForeignKey(Book, models.CASCADE, blank=True, null=True)
     in_bookmarks = models.BooleanField(default=False)
 
     class Meta:
-        default_related_name = 'highlights'
-        verbose_name = 'Highlight book'
-        verbose_name_plural = 'Highlight books'
+        default_related_name = 'bookmarks'
 
     def __str__(self):
-        return "{} highlighted {}".format(self.user.username, self.book.title)
+        return "{} in bookmark".format(self.book.title)

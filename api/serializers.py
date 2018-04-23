@@ -5,7 +5,7 @@ from catalogue.models import Book
 from catalogue.models import Author
 from catalogue.models import Publisher
 from catalogue.models import Category
-from catalogue.models import BookHighlight
+from catalogue.models import Bookmark
 
 
 # Author serialaziers
@@ -14,7 +14,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ('id', 'full_name', )
+        fields = ('id', 'last_name', 'first_name', 'full_name', )
 
 
 # Category serialaziers
@@ -28,11 +28,10 @@ class CategorySerializer(serializers.ModelSerializer):
     See: http://www.django-rest-framework.org/api-guide/fields/
     """
     category = serializers.CharField(source='title')
-    create = serializers.CharField(source='create_date')
 
     class Meta:
         model = Category
-        fields = ('id', 'category', 'create')
+        fields = ('id', 'category', )
 
 
 # Book serialaziers
@@ -81,26 +80,26 @@ class PublisherSerializer(serializers.ModelSerializer):
 
 # BookHighlight serialaziers
 # =================================================================================
-class BookHighlightSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source='user.username', read_only=True)
-    book = BookSerializer()
+class BookmarkSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.id', read_only=True)
+    # book = BookSerializer()
     in_bookmarks = serializers.BooleanField()
 
     class Meta:
-        model = BookHighlight
+        model = Bookmark
         fields = ('id', 'user', 'book', 'in_bookmarks', )
 
 
-class BookHighlightForUserSerializer(BookHighlightSerializer):
-    class Meta(BookHighlightSerializer.Meta):
+class BookHighlightForUserSerializer(BookmarkSerializer):
+    class Meta(BookmarkSerializer.Meta):
         fields = ('id', 'book', 'in_bookmarks', )
 
 
 # User serialaziers
 # =================================================================================
 class UserSerializer(serializers.ModelSerializer):
-    highlights = BookHighlightForUserSerializer(many=True, read_only=True)
+    bookmarks = BookHighlightForUserSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'highlights', )
+        fields = ('id', 'username', 'bookmarks', )

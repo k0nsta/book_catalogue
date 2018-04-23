@@ -9,7 +9,7 @@ router.register('authors', views.AuthorsViewSet)
 router.register('publishers', views.PublisherViewSet)
 router.register('categories', views.CategoryViewSet)
 router.register('users', views.UserViewSet)
-router.register('highlights', views.BookHighlightViewSet)
+router.register('bookmarks', views.BookmarkViewSet)
 
 urlpatterns = []
 

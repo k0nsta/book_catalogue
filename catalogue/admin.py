@@ -4,7 +4,7 @@ from .models import Author
 from .models import Book
 from .models import Category
 from .models import Publisher
-from .models import BookHighlight
+from .models import Bookmark
 
 
 @admin.register(Author)
@@ -36,8 +36,8 @@ class BookAdmin(admin.ModelAdmin):
     exclude = ('is_void', )
 
 
-@admin.register(BookHighlight)
-class UserToBookRelationsAdmin(admin.ModelAdmin):
+@admin.register(Bookmark)
+class BookmarkAdmin(admin.ModelAdmin):
     list_display = (
             'user',
             'book',

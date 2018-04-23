@@ -1,19 +1,21 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework.authentication import SessionAuthentication
+
 
 from catalogue.models import Book
 from catalogue.models import Author
 from catalogue.models import Publisher
 from catalogue.models import Category
-from catalogue.models import BookHighlight
+from catalogue.models import Bookmark
 
 from .serializers import BookSerializer
 from .serializers import AuthorSerializer
 from .serializers import PublisherSerializer
 from .serializers import CategorySerializer
 from .serializers import UserSerializer
-from .serializers import BookHighlightSerializer
+from .serializers import BookmarkSerializer
 
 
 class BooksViewSet(viewsets.ModelViewSet):
@@ -41,10 +43,18 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-class BookHighlightViewSet(viewsets.ModelViewSet):
-    queryset = BookHighlight.objects.all()
-    serializer_class = BookHighlightSerializer
+class BookmarkViewSet(viewsets.ModelViewSet):
+    queryset = Bookmark.objects.all()
+    serializer_class = BookmarkSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        bookmark = serializer.save()
+        bookmark.user = self.request.user
+        print(self.request.user)
+        bookmark.save()
 
     # def perform_create(self, serializer):
     #     serializer.save(user=self.request.user)
