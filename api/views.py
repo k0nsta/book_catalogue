@@ -41,6 +41,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAdminUser, )
+    authentication_classes = (SessionAuthentication,)
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
@@ -48,7 +50,6 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     serializer_class = BookmarkSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     authentication_classes = (SessionAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         queryset = self.queryset
