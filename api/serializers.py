@@ -1,3 +1,4 @@
+from django.db.models import Count, Q
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -82,7 +83,6 @@ class PublisherSerializer(serializers.ModelSerializer):
 # =================================================================================
 class BookmarkSerializer(serializers.ModelSerializer):
     user = serializers.CharField(source='user.id', read_only=True)
-    # book = BookSerializer()
     in_bookmarks = serializers.BooleanField()
 
     class Meta:
@@ -99,7 +99,12 @@ class BookHighlightForUserSerializer(BookmarkSerializer):
 # =================================================================================
 class UserSerializer(serializers.ModelSerializer):
     bookmarks = BookHighlightForUserSerializer(many=True, read_only=True)
+    bookmark_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'bookmarks', )
+        fields = ('id', 'username', 'bookmarks', 'bookmark_amount', )
+
+    def get_bookmark_amount(self, obj):
+        print(Bookmark.objects.filter(user=obj.id, in_bookmarks=True).count())
+        return Bookmark.objects.filter(user=obj.id, in_bookmarks=True).count()

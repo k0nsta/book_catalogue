@@ -64,3 +64,4 @@ class Bookmark(Isactiveable, Timestampable, IsVoidable, models.Model):
 
     def __str__(self):
         return "{} in bookmark".format(self.book.title)
+
