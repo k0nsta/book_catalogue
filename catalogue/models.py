@@ -56,7 +56,7 @@ class Book(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
 
 class Bookmark(Isactiveable, Timestampable, IsVoidable, models.Model):
     user = models.ForeignKey(User, models.CASCADE)
-    book = models.ForeignKey(Book, models.CASCADE, blank=True, null=True)
+    book = models.ForeignKey(Book, models.CASCADE)
     in_bookmarks = models.BooleanField(default=False)
 
     class Meta:

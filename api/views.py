@@ -15,7 +15,7 @@ from .serializers import AuthorSerializer
 from .serializers import PublisherSerializer
 from .serializers import CategorySerializer
 from .serializers import UserSerializer
-from .serializers import BookmarkSerializer
+from .serializers import BookmarkSerializer, BookmarkUserSerializer
 
 
 class BooksViewSet(viewsets.ModelViewSet):
@@ -47,13 +47,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class BookmarkViewSet(viewsets.ModelViewSet):
     queryset = Bookmark.objects.all()
-    serializer_class = BookmarkSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, )
     authentication_classes = (SessionAuthentication,)
+
+    def get_serializer_class(self):
+        if self.request.user.is_superuser:
+            return BookmarkSerializer
+        else:
+            return BookmarkUserSerializer
 
     def get_queryset(self):
         queryset = self.queryset
+        if self.request.user.is_superuser:
+            return queryset.all()
         return queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save()
+        if not self.request.user.is_superuser:
+            serializer.save(user=self.request.user)
