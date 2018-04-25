@@ -25,9 +25,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    author = serializers.CharField(source='author.full_name')
-    publisher = serializers.CharField(source='publisher.title')
-    category = CategorySerializer()
 
     class Meta:
         model = Book
@@ -35,7 +32,9 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class BookForPublisherSerializer(BookSerializer):
-    publisher = None
+    author = serializers.CharField(source='author.full_name')
+    publisher = serializers.CharField(source='publisher.title')
+    category = CategorySerializer()
 
     class Meta(BookSerializer.Meta):
         model = Book
@@ -51,17 +50,15 @@ class PublisherSerializer(serializers.ModelSerializer):
 
 class BookmarkSerializer(serializers.ModelSerializer):
     in_bookmarks = serializers.BooleanField()
+    user_name = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = Bookmark
-        fields = ('id', 'user', 'book', 'in_bookmarks', )
+        fields = ('id', 'user', 'user_name', 'book', 'in_bookmarks', )
 
 
 class BookmarkUserSerializer(BookmarkSerializer):
     user = serializers.CharField(source='user.id', read_only=True)
-
-    class Meta(BookmarkSerializer.Meta):
-        fields = ('id', 'book', 'in_bookmarks', )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -73,5 +70,4 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'bookmarks', 'bookmark_amount', )
 
     def get_bookmark_amount(self, obj):
-        print(Bookmark.objects.filter(user=obj.id, in_bookmarks=True).count())
         return Bookmark.objects.filter(user=obj.id, in_bookmarks=True).count()
