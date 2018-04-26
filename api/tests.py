@@ -57,6 +57,7 @@ class BaseTestCase(TestCase):
         cls.test_book2.save()
         cls.bookmark_url = reverse('bookmark-list')
         cls.user_list_url = reverse('user-list')
+        cls.books_url = reverse('book-list')
 
 
 class BookmarkViewSetTest(BaseTestCase):
@@ -127,6 +128,15 @@ class BookmarkViewSetTest(BaseTestCase):
 
 class UserViewSetTest(BaseTestCase):
 
+    def test_anonymous_has_not_access_user_list(self):
+        response = self.client.get(self.user_list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_anonumous_has_not_access_user_detail(self):
+        detail_url = reverse('user-detail', args=(self.test_user.id, ))
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_admin_has_access_user_list(self):
         self.login = self.client.login(**self.admin_login_data)
         response = self.client.get(self.user_list_url)
@@ -134,25 +144,21 @@ class UserViewSetTest(BaseTestCase):
 
     def test_admin_has_access_user_detail(self):
         detail_url = reverse('user-detail', args=(self.test_user.id, ))
-        response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
         self.login = self.client.login(**self.test_user_login_data)
         response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_user_hasnot_access_user_list(self):
-        self.login = self.client.login(**self.test_user_login_data)
-        response = self.client.get(self.user_list_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_user_hasnot_access_user_detail(self):
-        self.login = self.client.login(**self.test_user_login_data)
+    def test_user_has_access_own_profile(self):
         detail_url = reverse('user-detail', args=(self.test_user.id, ))
-        response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.login = self.client.login(**self.test_user_login_data)
 
-    def test_correct_view_for_bookmarks_amount_user_list(self):
+        response = self.client.get(self.user_list_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_correct_view_for_bookmarks_amount_in_user_list(self):
         self.login = self.client.login(**self.admin_login_data)
         bookmark1 = Bookmark.objects.create(
                                 user=self.test_user,
@@ -187,3 +193,10 @@ class UserViewSetTest(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['bookmark_amount'], 2)
 
+
+class BookViewSetTest(BaseTestCase):
+
+    def test_filter_by_exact_title(self):
+        filter_string = '?title={}'.format(self.test_book1.title)
+        response = self.client.get(self.books_url + filter_string)
+        self.assertEqual(response.data[0]['id'], 1)

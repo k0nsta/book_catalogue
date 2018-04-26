@@ -17,7 +17,7 @@ from .serializers import CategorySerializer
 from .serializers import UserAdminSerializer, UserRestrictedSerializer
 from .serializers import BookmarkSerializer, BookmarkUserSerializer
 
-from .permissions import IsAdminOrUserReadOnly
+from .permissions import UserReadOnlyOrIsAdmin
 
 
 class BooksViewSet(viewsets.ModelViewSet):
@@ -44,7 +44,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (IsAdminOrUserReadOnly, )
+    permission_classes = (UserReadOnlyOrIsAdmin, )
     authentication_classes = (SessionAuthentication,)
 
     def get_queryset(self):
