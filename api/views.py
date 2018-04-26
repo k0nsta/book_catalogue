@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
-
+from django_filters.rest_framework import DjangoFilterBackend
 
 from catalogue.models import Book
 from catalogue.models import Author
@@ -23,6 +23,8 @@ from .permissions import IsAdminOrUserReadOnly
 class BooksViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('title', )
 
 
 class AuthorsViewSet(viewsets.ModelViewSet):

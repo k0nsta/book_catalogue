@@ -12,4 +12,3 @@ class IsAdminOrUserReadOnly(BasePermission):
             request.user and
             request.user.is_staff
         )
-

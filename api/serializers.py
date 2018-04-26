@@ -50,7 +50,7 @@ class PublisherSerializer(serializers.ModelSerializer):
 
 class BookmarkSerializer(serializers.ModelSerializer):
     in_bookmarks = serializers.BooleanField()
-    user_name = serializers.CharField(source='user.username', read_only=True)
+    user_name = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Bookmark
@@ -58,7 +58,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
 
 
 class BookmarkUserSerializer(BookmarkSerializer):
-    user = serializers.CharField(source='user.id', read_only=True)
+    user = serializers.ReadOnlyField(source='user.id')
 
 
 class UserAdminSerializer(serializers.ModelSerializer):
