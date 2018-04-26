@@ -51,17 +51,14 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
 
     def get_serializer_class(self):
-        print('from get_serializer_class. Is_superuser :', self.request.user.is_superuser)
         if self.request.user.is_superuser:
             return BookmarkSerializer
         else:
-            print('from get_serializer_class. Srialazier for User returned')
             return BookmarkUserSerializer
 
     def get_queryset(self):
         queryset = self.queryset
         if self.request.user.is_superuser:
-            # print(queryset.all().exclude(user__username__contains='admin'))
             return queryset.all()
         return queryset.filter(user=self.request.user)
 

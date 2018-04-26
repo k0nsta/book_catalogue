@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -53,56 +54,63 @@ class BookmarkViewSetTest(TestCase):
 
     def test_create_bookmark_by_authorized_user(self):
         self.login = self.client.login(username='test1', password='12345qaz')
-        # print('User from bookmark :', self.test_admin)
-        print('Book :', self.test_book1)
         bookmark_data = {
-            'user': self.login,
             'in_bookmarks': True,
-            'book': self.test_book1
+            'book': self.test_book1.id,
         }
-        print('data :', bookmark_data)
         response = self.client.post(self.bookmark_url, bookmark_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Bookmark.objects.filter(user=self.test_user).count(), 1)
 
-    # def test_create_only_own_bookmark_by_authorized_user(self):
-    #     self.login = self.client.login(username='test1', password='12345qaz')
-    #     bookmark_data = {
-    #         'user': self.test_admin.id,
-    #         'in_bookmarks': True,
-    #         'book': self.test_book1.id,
-    #     }
-    #     response = self.client.post(self.bookmark_url, bookmark_data)
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    #     self.assertEqual(Bookmark.objects.count(), 1)
+    def test_create_only_own_bookmark_by_authorized_user(self):
+        self.login = self.client.login(username='test1', password='12345qaz')
+        bookmark_data = {
+            'user': self.test_admin.id,
+            'in_bookmarks': True,
+            'book': self.test_book1.id,
+        }
+        response = self.client.post(self.bookmark_url, bookmark_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Bookmark.objects.filter(user=self.test_user).count(), 1)
 
-    # def test_anonymous_user_no_access_to_bookmarks(self):
-    #     response = self.client.get(self.bookmark_url)
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_anonymous_user_no_access_to_bookmarks(self):
+        response = self.client.get(self.bookmark_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    # def test_admin_access_to_all_bookmarks(self):
-    #     self.login = self.client.login(username='test_admin', password='54321qaz')
-    #     bookmark = Bookmark.objects.create(user=self.test_user, book=self.test_book1)
-    #     response = self.client.get(self.bookmark_url)
-    #     print(response)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertIsNotNone(bookmark)
+    # Doesn't work
+    def test_admin_access_to_all_bookmarks(self):
+        self.login = self.client.login(username='test_admin', password='54321qaz')
+        bookmark1 = Bookmark.objects.create(user=self.test_user, book=self.test_book1)
+        valid_data = {
+                    'id': 1,
+                    'user': 2,
+                    'username': 'test1',
+                    'book': 1,
+                    'in_bookmarks': False,
+        }
 
-    # def test_admin_can_create_any_users_bookmark(self):
-    #     self.login = self.client.login(username='test_admin', password='54321qaz')
-    #     bookmark_data = {
-    #         'user': self.test_user.id,
-    #         'in_bookmarks': True,
-    #         'book': self.test_book1.id,
-    #     }
-    #     response = self.client.post(self.bookmark_url, bookmark_data)
-    #     # print(response.status_code)
-    #     # print(Bookmark.objects.filter(user_id=self.test_user))
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    #     # self.assertEqual(Bookmark.objects.filter(user_id=self.test_user).count(), 1)
+        response = self.client.get(self.bookmark_url)
 
-    # def test_authorized_user_cant_create_other_users_bookmarks(self):
-    #     pass
+        resp = json.loads(response.content)
+
+        print(valid_data == resp[0])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, valid_data)
+
+    def test_admin_can_create_any_users_bookmark(self):
+        self.login = self.client.login(username='test_admin', password='54321qaz')
+        bookmark_data = {
+            'user': self.test_user.id,
+            'in_bookmarks': True,
+            'book': self.test_book1.id,
+        }
+        response = self.client.post(self.bookmark_url, bookmark_data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Bookmark.objects.filter(user_id=self.test_user).count(), 1)
+
+    def test_authorized_user_cant_create_other_users_bookmarks(self):
+        pass
 
 
 
