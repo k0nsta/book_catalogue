@@ -51,19 +51,19 @@ class BookmarkViewSet(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication,)
 
     def get_serializer_class(self):
-        if self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return BookmarkSerializer
         else:
             return BookmarkUserSerializer
 
     def get_queryset(self):
         queryset = self.queryset
-        if self.request.user.is_superuser:
+        if self.request.user.is_staff:
             return queryset.all()
         return queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        if self.request.user.is_superuser:
+        if self.request.user.is_staff:
             serializer.save()
         else:
             serializer.save(user=self.request.user)
