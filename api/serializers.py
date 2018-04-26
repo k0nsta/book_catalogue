@@ -61,7 +61,7 @@ class BookmarkUserSerializer(BookmarkSerializer):
     user = serializers.CharField(source='user.id', read_only=True)
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserAdminSerializer(serializers.ModelSerializer):
     bookmarks = BookmarkUserSerializer(many=True, read_only=True)
     bookmark_amount = serializers.SerializerMethodField()
 
@@ -71,3 +71,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_bookmark_amount(self, obj):
         return Bookmark.objects.filter(user=obj.id, in_bookmarks=True).count()
+
+
+class UserRestrictedSerializer(UserAdminSerializer):
+    user_name = serializers.ReadOnlyField(source='username')
+
+    class Meta(UserAdminSerializer):
+        model = User
+        fields = ('id', 'user_name', 'bookmarks', 'bookmark_amount', )

@@ -14,7 +14,7 @@ from .serializers import BookSerializer
 from .serializers import AuthorSerializer
 from .serializers import PublisherSerializer
 from .serializers import CategorySerializer
-from .serializers import UserSerializer
+from .serializers import UserAdminSerializer, UserRestrictedSerializer
 from .serializers import BookmarkSerializer, BookmarkUserSerializer
 
 
@@ -40,9 +40,20 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAuthenticated, )
     authentication_classes = (SessionAuthentication,)
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.request.user.is_staff:
+            return queryset.all()
+        return queryset.filter(username=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return UserAdminSerializer
+        else:
+            return UserRestrictedSerializer
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
