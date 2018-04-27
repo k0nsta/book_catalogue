@@ -6,8 +6,9 @@ from .behaviors import Isactiveable
 from .behaviors import Titleable
 from .behaviors import IsVoidable
 
+from . import utils
 
-# Create your models here.
+
 class Author(Isactiveable, Timestampable, IsVoidable, models.Model):
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
@@ -43,6 +44,9 @@ class Category(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model)
 
 
 class Book(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
+    original_author = models.CharField(max_length=255, blank=True)
+    original_title = models.CharField(max_length=255, blank=True)
+    isbn = models.CharField(max_length=255, blank=True)
     author = models.ForeignKey(Author, models.CASCADE, blank=True, null=True)
     category = models.ForeignKey(Category, models.CASCADE, blank=True, null=True)
     publisher = models.ForeignKey(Publisher, models.CASCADE, blank=True, null=True)
@@ -52,6 +56,13 @@ class Book(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if self.isbn:
+            google_data = utils.get_original_title_and_name(self.isbn)
+            self.original_author = google_data['author']
+            self.original_title = google_data['title']
+        super().save(*args, **kwargs)
 
 
 class Bookmark(Isactiveable, Timestampable, IsVoidable, models.Model):
