@@ -200,3 +200,8 @@ class BookViewSetTest(BaseTestCase):
         filter_string = '?title={}'.format(self.test_book1.title)
         response = self.client.get(self.books_url + filter_string)
         self.assertEqual(response.data[0]['id'], 1)
+
+    def test_filter_by_icontains_title(self):
+        filter_string = '?title__icontains=est2'
+        response = self.client.get(self.books_url + filter_string)
+        self.assertEqual(response.data[0]['id'], 2)

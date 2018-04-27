@@ -2,49 +2,39 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
 
-from catalogue.models import Book
-from catalogue.models import Author
-from catalogue.models import Publisher
-from catalogue.models import Category
-from catalogue.models import Bookmark
-
-from .serializers import BookSerializer
-from .serializers import AuthorSerializer
-from .serializers import PublisherSerializer
-from .serializers import CategorySerializer
-from .serializers import UserAdminSerializer, UserRestrictedSerializer
-from .serializers import BookmarkSerializer, BookmarkUserSerializer
-
-from .permissions import UserReadOnlyOrIsAdmin
+from catalogue import models
+from . import serializers as custom_serializers
+from . import permissions as custom_permissions
+from . import filters as custom_filters
 
 
 class BooksViewSet(viewsets.ModelViewSet):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('title', )
+    queryset = models.Book.objects.all()
+    serializer_class = custom_serializers.BookSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = custom_filters.BookTitleFilter
 
 
 class AuthorsViewSet(viewsets.ModelViewSet):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
+    queryset = models.Author.objects.all()
+    serializer_class = custom_serializers.AuthorSerializer
 
 
 class PublisherViewSet(viewsets.ModelViewSet):
-    queryset = Publisher.objects.all()
-    serializer_class = PublisherSerializer
+    queryset = models.Publisher.objects.all()
+    serializer_class = custom_serializers.PublisherSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    queryset = models.Category.objects.all()
+    serializer_class = custom_serializers.CategorySerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (UserReadOnlyOrIsAdmin, )
+    permission_classes = (custom_permissions.UserReadOnlyOrIsAdmin, )
     authentication_classes = (SessionAuthentication,)
 
     def get_queryset(self):
@@ -55,21 +45,21 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.request.user.is_staff:
-            return UserAdminSerializer
+            return custom_serializers.UserAdminSerializer
         else:
-            return UserRestrictedSerializer
+            return custom_serializers.UserRestrictedSerializer
 
 
 class BookmarkViewSet(viewsets.ModelViewSet):
-    queryset = Bookmark.objects.all()
+    queryset = models.Bookmark.objects.all()
     permission_classes = (permissions.IsAuthenticated, )
     authentication_classes = (SessionAuthentication,)
 
     def get_serializer_class(self):
         if self.request.user.is_staff:
-            return BookmarkSerializer
+            return custom_serializers.BookmarkSerializer
         else:
-            return BookmarkUserSerializer
+            return custom_serializers.BookmarkUserSerializer
 
     def get_queryset(self):
         queryset = self.queryset

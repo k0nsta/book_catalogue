@@ -2,17 +2,13 @@ from django.db.models import Count, Q
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from catalogue.models import Book
-from catalogue.models import Author
-from catalogue.models import Publisher
-from catalogue.models import Category
-from catalogue.models import Bookmark
+from catalogue import models
 
 
 class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Author
+        model = models.Author
         fields = ('id', 'last_name', 'first_name', 'full_name', )
 
 
@@ -20,14 +16,14 @@ class CategorySerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='title')
 
     class Meta:
-        model = Category
+        model = models.Category
         fields = ('id', 'category', )
 
 
 class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Book
+        model = models.Book
         fields = ('id', 'title', 'author', 'category', 'publisher')
 
 
@@ -37,14 +33,14 @@ class BookForPublisherSerializer(BookSerializer):
     category = CategorySerializer()
 
     class Meta(BookSerializer.Meta):
-        model = Book
+        model = models.Book
 
 
 class PublisherSerializer(serializers.ModelSerializer):
     books = BookForPublisherSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Publisher
+        model = models.Publisher
         fields = ('id', 'title', 'books')
 
 
@@ -53,7 +49,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
     user_name = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
-        model = Bookmark
+        model = models.Bookmark
         fields = ('id', 'user', 'user_name', 'book', 'in_bookmarks', )
 
 
@@ -70,7 +66,7 @@ class UserAdminSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'bookmarks', 'bookmark_amount', )
 
     def get_bookmark_amount(self, obj):
-        return Bookmark.objects.filter(user=obj.id, in_bookmarks=True).count()
+        return models.Bookmark.objects.filter(user=obj.id, in_bookmarks=True).count()
 
 
 class UserRestrictedSerializer(UserAdminSerializer):
