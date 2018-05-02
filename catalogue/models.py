@@ -60,8 +60,9 @@ class Book(Titleable, Isactiveable, Timestampable, IsVoidable, models.Model):
     def save(self, *args, **kwargs):
         if self.isbn:
             google_data = utils.get_original_title_and_name(self.isbn)
-            self.original_author = google_data['author']
-            self.original_title = google_data['title']
+            if google_data:
+                self.original_author = google_data['author']
+                self.original_title = google_data['title']
         super().save(*args, **kwargs)
 
 

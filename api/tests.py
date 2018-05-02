@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -205,3 +203,4 @@ class BookViewSetTest(BaseTestCase):
         filter_string = '?title__icontains=est2'
         response = self.client.get(self.books_url + filter_string)
         self.assertEqual(response.data[0]['id'], self.test_book2.id)
+
