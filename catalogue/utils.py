@@ -5,7 +5,7 @@ import requests
 from .constants import GOOGLE_API_KEY, GOOGLE_API_URL, THE_FIRST_INDEX
 
 
-def get_original_title_and_name(isbn, **kawargs):
+def fetch_title_author(isbn, **kawargs):
     connection_attempts = 3
     isbn_search_string = 'isbn:{}'.format(isbn)
     payload = {
@@ -13,8 +13,6 @@ def get_original_title_and_name(isbn, **kawargs):
         'q': isbn_search_string,
         'printType': 'books',
     }
-    r = requests.get(GOOGLE_API_URL, params=payload)
-    response = r.json()
     while connection_attempts > 0:
         try:
             r = requests.get(GOOGLE_API_URL, params=payload)
@@ -37,5 +35,5 @@ def get_original_title_and_name(isbn, **kawargs):
 
 
 if __name__ == '__main__':
-    resp = get_original_title_and_name(sys.argv[1])
+    resp = fetch_title_author(sys.argv[1])
     print(json.dumps(resp, indent=4))
